@@ -42,6 +42,8 @@ private:
 	void updateDigits(vector<guessCache> &cache, int *m_digitsAmount, int length);
 
 	void createGoodGuessByCacheHistory(vector<guessCache> &cache, char *in_out, int length);
+
+	bool testCombinationByCache(vector<guessCache> &cache, const char *ret, int len);
 };
 
 }// namespace bullpgia

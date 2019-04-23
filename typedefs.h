@@ -22,13 +22,18 @@ class MallocGuard
 {
 private:
 	char *m_ptr;
+	uint m_len;
 public:
-	MallocGuard(uint size)
+	MallocGuard(uint size, char initValue=0)
 	{
-		m_ptr = (char *) malloc(size + 1);
+		m_len = size;
+		m_ptr = (char *) malloc(m_len + 1);
+		memset(m_ptr, initValue, m_len);
 	}
 
 	char *ptr(){return m_ptr;}
+
+	uint len(){return m_len;}
 
 	virtual ~MallocGuard()
 	{

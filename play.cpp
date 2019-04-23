@@ -17,8 +17,6 @@ namespace bullpgia {
 
 		string choice = chooser.choose(length);
 
-		printf("choice: %s\n", choice.c_str());
-
 		if (choice.length()!=length)       // Illegal choice
 			return TECHNICAL_VICTORY_TO_GUESSER;
 		guesser.startNewGame(length);  // tell the guesser that a new game starts now

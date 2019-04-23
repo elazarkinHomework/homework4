@@ -6,6 +6,7 @@
  */
 
 #include "SmartGuesser.hpp"
+#include "calculate.hpp"
 
 namespace bullpgia
 {
@@ -67,7 +68,7 @@ string SmartGuesser::guessNext()
 
 	if(m_cache.size() > 0 && m_cache.back().bull+m_cache.back().pgia >= length)
 	{
-		printf("will copy %s we know all numbers\n", m_cache.back().guess.c_str());
+//		printf("will copy %s we know all numbers\n", m_cache.back().guess.c_str());
 		memcpy(ret, m_cache.back().guess.c_str(), length);
 	}
 	else
@@ -81,12 +82,12 @@ string SmartGuesser::guessNext()
 		nextUnknowNumbersGuess(m_cache, ret, length);
 	}
 
-	printf("try_%d: ", m_cache.size());
-	for(int i = 0; i < length; i++)
-	{
-		printf("%c", ret[i]);
-	}
-	printf("\n");
+//	printf("try_%d: ", m_cache.size());
+//	for(int i = 0; i < length; i++)
+//	{
+//		printf("%c", ret[i]);
+//	}
+//	printf("\n");
 
 	// TODO add function createGoodGuessByCacheHistory
 
@@ -131,9 +132,61 @@ void SmartGuesser::updateDigits(vector<guessCache> &cache, int *digitsAmount, in
 	digitsAmount[cache.size()-1] = cache.back().bull + cache.back().pgia - alreadyCounted;
 }
 
-void SmartGuesser::createGoodGuessByCacheHistory(vector<guessCache> &cache, char *ret, int length)
+void SmartGuesser::createGoodGuessByCacheHistory(vector<guessCache> &cache, char *ret, int len)
 {
+	int index;
+	MallocGuard goffsets(len, 1);
+	MallocGuard gtemp(len);
+	MallocGuard gcounts((len+1)*sizeof(int));
 
+	char *offsets = goffsets.ptr();
+	char *temp = gtemp.ptr();
+	int *counts = (int *)gcounts.ptr();
+
+	while(!testCombinationByCache(cache, ret, len))
+	{
+		index = 1;
+		counts[index]++;
+
+		while(index < len && counts[index] > index)
+		{
+			counts[index] = 0;
+			counts[++index]++;
+		}
+
+		if(counts[len] >= 1) break;
+
+		memcpy(temp, ret, len);
+		for(int i = 0; i <= index; i++)
+		{
+			temp[i] = ret[(i+offsets[index]+index+1)%(index+1)];
+		}
+
+		offsets[index] *= -1;
+
+		memcpy(ret, temp, len);
+
+//		for(int i = 0; i < len; i++)
+//		{
+//			printf("%c", ret[i]);
+//		}
+//
+//		printf("\n");
+
+	}
+}
+
+bool SmartGuesser::testCombinationByCache(vector<guessCache> &cache, const char *ret, int len)
+{
+	for(int i = 0; i < cache.size(); i++)
+	{
+		int bul, pgia;
+
+		calculateBullAndPgia2(cache[i].guess, string(ret), bul, pgia);
+
+		if(bul != cache[i].bull || pgia != cache[i].pgia) return false;
+	}
+	return true;
 }
 
 } //namespace bullpgia

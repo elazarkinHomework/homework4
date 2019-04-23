@@ -14,16 +14,18 @@
 
 using namespace std;
 
-inline string calculateBullAndPgia(string _input, string _expected)
+inline bool calculateBullAndPgia2(string _input, string _expected, int &bul, int &pgia)
 {
 	char out[16];
-	int bul = 0, pgia = 0;
 	int l_input = strlen(_input.c_str());
 	int l_expected = strlen(_input.c_str());
 
+	bul = 0;
+	pgia = 0;
+
 	if(l_input != l_expected)
 	{
-		return string("calculateBullAndPgia ERROR - diffrent lenghts of input vs expected");
+		return false;
 	}
 	else
 	{
@@ -58,9 +60,21 @@ inline string calculateBullAndPgia(string _input, string _expected)
 		}
 	}
 
-	sprintf(out, BULL_PGIA_FORMAT, bul, pgia);
+	return true;
+}
 
-	return string(out);
+inline string calculateBullAndPgia(string _input, string _expected)
+{
+	char out[16];
+	int bul, pgia;
+
+	if(calculateBullAndPgia2(_input, _expected, bul, pgia))
+	{
+		sprintf(out, BULL_PGIA_FORMAT, bul, pgia);
+		return string(out);
+	}
+
+	return string("calculateBullAndPgia ERROR - diffrent lenghts of input vs expected");
 }
 
 #endif /* CALCULATE_HPP_ */

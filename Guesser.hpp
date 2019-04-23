@@ -52,7 +52,6 @@ public:
 
 	void startNewGame(uint l)
 	{
-		printf("Guesser::startNewGame\n");
 		length = l;
 		m_cache.clear();
 	}
