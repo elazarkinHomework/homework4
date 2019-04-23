@@ -17,16 +17,19 @@ namespace bullpgia {
 
 		string choice = chooser.choose(length);
 
+		printf("choose - %s\n", choice.c_str());
+
 		if (choice.length()!=length)       // Illegal choice
 			return TECHNICAL_VICTORY_TO_GUESSER;
 		guesser.startNewGame(length);  // tell the guesser that a new game starts now
 		uint indexOfTurn;
 		for (indexOfTurn=0; indexOfTurn<maxTurns; ++indexOfTurn) {
 			string guess = guesser.guess();
+			printf("try_%d: guess - %s choice %s \n", indexOfTurn, guess.c_str(), choice.c_str());
 			if (guess.length()!=length)  // Illegal guess
 				return TECHNICAL_VICTORY_TO_CHOOSER;
 			if (guess==choice) {
-				printf("success guess - %s choice %s", guess.c_str(), choice.c_str());
+				printf("success guess - %s choice %s \n", guess.c_str(), choice.c_str());
 				return indexOfTurn + 1; 
 			} else {
 				auto reply = calculateBullAndPgia(choice, guess);

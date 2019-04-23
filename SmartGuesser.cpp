@@ -7,6 +7,7 @@
 
 #include "SmartGuesser.hpp"
 #include "calculate.hpp"
+#include <algorithm>
 
 namespace bullpgia
 {
@@ -63,7 +64,7 @@ void SmartGuesser::prepareBeforeNewGame()
 
 string SmartGuesser::guessNext()
 {
-	MallocGuard cret(length);
+	MallocGuard cret(length + 16);
 	char *ret = cret.ptr();
 
 	if(m_cache.size() > 0 && m_cache.back().bull+m_cache.back().pgia >= length)
@@ -81,15 +82,6 @@ string SmartGuesser::guessNext()
 
 		nextUnknowNumbersGuess(m_cache, ret, length);
 	}
-
-//	printf("try_%d: ", m_cache.size());
-//	for(int i = 0; i < length; i++)
-//	{
-//		printf("%c", ret[i]);
-//	}
-//	printf("\n");
-
-	// TODO add function createGoodGuessByCacheHistory
 
 	createGoodGuessByCacheHistory(m_cache, ret, length);
 
@@ -135,16 +127,22 @@ void SmartGuesser::updateDigits(vector<guessCache> &cache, int *digitsAmount, in
 void SmartGuesser::createGoodGuessByCacheHistory(vector<guessCache> &cache, char *ret, int len)
 {
 	int index;
-	MallocGuard goffsets(len, 1);
+	MallocGuard gorigin(len);
 	MallocGuard gtemp(len);
-	MallocGuard gcounts((len+1)*sizeof(int));
+	MallocGuard gcounts((len+16)*sizeof(int));
 
-	char *offsets = goffsets.ptr();
 	char *temp = gtemp.ptr();
+	char *origin = gorigin.ptr();
 	int *counts = (int *)gcounts.ptr();
+
+	vector<string> testAll;
+
+	memcpy(origin, ret, len);
 
 	while(!testCombinationByCache(cache, ret, len))
 	{
+		testAll.push_back(string(ret));
+
 		index = 1;
 		counts[index]++;
 
@@ -154,25 +152,32 @@ void SmartGuesser::createGoodGuessByCacheHistory(vector<guessCache> &cache, char
 			counts[++index]++;
 		}
 
-		if(counts[len] >= 1) break;
-
-		memcpy(temp, ret, len);
-		for(int i = 0; i <= index; i++)
+		if(counts[len] >= 1)
 		{
-			temp[i] = ret[(i+offsets[index]+index+1)%(index+1)];
+			printf("bug! look4combination scaned all!\n");
+			std::sort(testAll.begin(), testAll.end());
+			printf("all permutations\n");
+			for(int i = 0; i < testAll.size(); i++)
+			{
+				printf("%s\n", testAll[i].c_str());
+			}
+			break;
 		}
 
-		offsets[index] *= -1;
+		memcpy(ret, origin, len);
 
-		memcpy(ret, temp, len);
-
-//		for(int i = 0; i < len; i++)
-//		{
-//			printf("%c", ret[i]);
-//		}
-//
-//		printf("\n");
-
+		for(int i = len-1; i >= 0; i--)
+		{
+			if(counts[i] > 0)
+			{
+				memcpy(temp, ret, len);
+				for(int j = 0; j <= i; j++)
+				{
+					temp[j] = ret[(j+counts[i])%(i+1)];
+				}
+				memcpy(ret, temp, len);
+			}
+		}
 	}
 }
 
@@ -182,10 +187,16 @@ bool SmartGuesser::testCombinationByCache(vector<guessCache> &cache, const char 
 	{
 		int bul, pgia;
 
+		if(strncmp(ret, cache[i].guess.c_str(), len) == 0)
+		{
+			return false;
+		}
+
 		calculateBullAndPgia2(cache[i].guess, string(ret), bul, pgia);
 
 		if(bul != cache[i].bull || pgia != cache[i].pgia) return false;
 	}
+
 	return true;
 }
 
