@@ -39,6 +39,8 @@ string SmartGuesser::guess()
 
 	m_cache.push_back(guessCache(ret, 0, 0));
 
+	printf("try_%d: %s\n", m_cache.size(), ret.c_str());
+
 	return ret;
 }
 
@@ -74,7 +76,7 @@ string SmartGuesser::guessNext()
 	}
 	else
 	{
-		// should be in override function learn
+		// updateDigits should be in override function learn
 		// but the problem is a object slicing in implementation of teacher
 		// and we cant override it cause it not called!
 
@@ -135,14 +137,10 @@ void SmartGuesser::createGoodGuessByCacheHistory(vector<guessCache> &cache, char
 	char *origin = gorigin.ptr();
 	int *counts = (int *)gcounts.ptr();
 
-	vector<string> testAll;
-
 	memcpy(origin, ret, len);
 
 	while(!testCombinationByCache(cache, ret, len))
 	{
-		testAll.push_back(string(ret));
-
 		index = 1;
 		counts[index]++;
 
@@ -154,13 +152,6 @@ void SmartGuesser::createGoodGuessByCacheHistory(vector<guessCache> &cache, char
 
 		if(counts[len] >= 1)
 		{
-			printf("bug! look4combination scaned all!\n");
-			std::sort(testAll.begin(), testAll.end());
-			printf("all permutations\n");
-			for(int i = 0; i < testAll.size(); i++)
-			{
-				printf("%s\n", testAll[i].c_str());
-			}
 			break;
 		}
 
