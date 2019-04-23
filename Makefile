@@ -6,7 +6,7 @@ all: test
 demo:  Demo.o DummyChoosers.o DummyGuessers.o play.o calculate.o SmartGuesser.o
 	clang++-5.0 -std=c++17 $^ -o demo
 
-test:  Test.o DummyChoosers.o DummyGuessers.o play.o calculate.o SmartGuesser.o 
+test:  Test.o DummyChoosers.o DummyGuessers.o play.o SmartGuesser.o 
 	clang++-5.0 -std=c++17 $^ -o test
 
 %.o: %.cpp
