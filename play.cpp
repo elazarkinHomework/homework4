@@ -26,6 +26,7 @@ namespace bullpgia {
 			if (guess.length()!=length)  // Illegal guess
 				return TECHNICAL_VICTORY_TO_CHOOSER;
 			if (guess==choice) {
+				printf("success guess - %s choice %s", guess.c_str(), choice.c_str());
 				return indexOfTurn + 1; 
 			} else {
 				auto reply = calculateBullAndPgia(choice, guess);
