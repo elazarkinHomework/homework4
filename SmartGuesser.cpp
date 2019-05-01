@@ -135,14 +135,14 @@ void SmartGuesser::createGoodGuessByCacheHistory(vector<guessCache> &cache, char
 	char *origin = gorigin.ptr();
 	int *counts = (int *)gcounts.ptr();
 
-	vector<string> testAll;
+	char *tempPtr = temp;
+	char *retPtr = ret;
+	char *swapPtr;
 
 	memcpy(origin, ret, len);
 
-	while(!testCombinationByCache(cache, ret, len))
+	while(!testCombinationByCache(cache, retPtr, len))
 	{
-		testAll.push_back(string(ret));
-
 		index = 1;
 		counts[index]++;
 
@@ -155,29 +155,31 @@ void SmartGuesser::createGoodGuessByCacheHistory(vector<guessCache> &cache, char
 		if(counts[len] >= 1)
 		{
 			printf("bug! look4combination scaned all!\n");
-			std::sort(testAll.begin(), testAll.end());
-			printf("all permutations\n");
-			for(int i = 0; i < testAll.size(); i++)
-			{
-				printf("%s\n", testAll[i].c_str());
-			}
 			break;
 		}
 
-		memcpy(ret, origin, len);
+		memcpy(retPtr, origin, len);
+		memcpy(tempPtr, retPtr, len);
 
 		for(int i = len-1; i >= 0; i--)
 		{
 			if(counts[i] > 0)
 			{
-				memcpy(temp, ret, len);
 				for(int j = 0; j <= i; j++)
 				{
-					temp[j] = ret[(j+counts[i])%(i+1)];
+					tempPtr[j] = retPtr[(j+counts[i])%(i+1)];
 				}
-				memcpy(ret, temp, len);
+				swapPtr = retPtr;
+				retPtr = tempPtr;
+				tempPtr = swapPtr;
 			}
+			tempPtr[i] = retPtr[i];
 		}
+	}
+
+	if(retPtr != ret)
+	{
+		memcpy(ret, retPtr, len);
 	}
 }
 
