@@ -11,6 +11,8 @@
 #include <vector>
 #include "typedefs.h"
 
+#include "calculate.hpp"
+
 using namespace std;
 
 namespace bullpgia {
