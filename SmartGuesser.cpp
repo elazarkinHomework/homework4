@@ -39,8 +39,6 @@ string SmartGuesser::guess()
 
 	m_cache.push_back(guessCache(ret, 0, 0));
 
-	printf("try_%d: %s\n", m_cache.size(), ret.c_str());
-
 	return ret;
 }
 
