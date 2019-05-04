@@ -135,9 +135,13 @@ void SmartGuesser::createGoodGuessByCacheHistory(vector<guessCache> &cache, char
 	char *origin = gorigin.ptr();
 	int *counts = (int *)gcounts.ptr();
 
+	char *tempPtr = temp;
+	char *retPtr = ret;
+	char *swapPtr;
+
 	memcpy(origin, ret, len);
 
-	while(!testCombinationByCache(cache, ret, len))
+	while(!testCombinationByCache(cache, retPtr, len))
 	{
 		index = 1;
 		counts[index]++;
@@ -153,20 +157,28 @@ void SmartGuesser::createGoodGuessByCacheHistory(vector<guessCache> &cache, char
 			break;
 		}
 
-		memcpy(ret, origin, len);
+		memcpy(retPtr, origin, len);
+		memcpy(tempPtr, retPtr, len);
 
 		for(int i = len-1; i >= 0; i--)
 		{
 			if(counts[i] > 0)
 			{
-				memcpy(temp, ret, len);
 				for(int j = 0; j <= i; j++)
 				{
-					temp[j] = ret[(j+counts[i])%(i+1)];
+					tempPtr[j] = retPtr[(j+counts[i])%(i+1)];
 				}
-				memcpy(ret, temp, len);
+				swapPtr = retPtr;
+				retPtr = tempPtr;
+				tempPtr = swapPtr;
 			}
+			tempPtr[i] = retPtr[i];
 		}
+	}
+
+	if(retPtr != ret)
+	{
+		memcpy(ret, retPtr, len);
 	}
 }
 
